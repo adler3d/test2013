@@ -1,4 +1,6 @@
-http://habrahabr.ru/post/200190/
+/*
+  http://habrahabr.ru/post/200190/
+*/
 var arr=[1,2,5,4,5,1];
 var map=[];
 var max=arr[0];
