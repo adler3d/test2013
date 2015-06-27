@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <title>conv_var_to_add</title>
+<script>
+function go()
+{
+  /*var code=document.getElementById("code").value;
+  var data=document.getElementById("data").value;*/
+  var g_result=null;
+  eval("g_result=(function(POST){"+document.getElementById('code').value+";\n}({code:document.getElementById('code').value,data:document.getElementById('data').value}));");
+  document.getElementById("out").value=g_result;
+  return g_result;
+}
+</script>
+</head>
+<body>
+    <img style="display:none" src="http://adler.hol.es/github/dir.png" />
+    <div style="display:none">
+      <p><b>code:</b></p>
+      <p><textarea rows="15" cols="120" name="code" id="code">var arr=POST['data'].split("\n");
+for(var i=0;i<arr.length;i++)
+{
+  var f=arr[i].split("=").length;
+  if(f>2)return "FAIL at line "+i;
+  var a=arr[i].trim().split(" ").join(",").split("=").join(",").split(";").join("");
+  arr[i]="ADD("+a+(f==1?",$":"")+")\\"
+}
+return "#define DEF_PRO_VARIABLE(ADD)\\\n"+arr.join("\n")+"\n//===\n#include \"defprovar.inl\"\n//===";</textarea></p>
+    </div>
+    <p><b>data:</b></p>
+    <p><textarea rows="10" cols="120" name="data" id="data"></textarea></p>
+    <p><button onclick="go();">Go</button></p>
+    <p><textarea rows="10" cols="120" name="out" id="out"></textarea></p>
+  <pre>see:     <a href="defproinit.inl">defproinit.inl</a>     <a href="defprovar.inl">defprovar.inl</a></pre>
+  <h2>version 1.0</h2>
+</body></html>
