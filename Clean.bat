@@ -22,17 +22,17 @@ Del /s *.sdf
 Del /s /q *.manifest
 Del /s /q *.manifest.res
 Del /s /q ipch\*.*
-Del /s /q Demo\Release\*.*
-Del /s /q Demo\Debug\*.*
-rmdir /s /q Demo\Release
-rmdir /s /q Demo\Debug
+rem Del /s /q Demo\Release\*.*
+rem Del /s /q Demo\Debug\*.*
+rem rmdir /s /q Demo\Release
+rem rmdir /s /q Demo\Debug
 rmdir /s /q ipch
 Del /s /q _UpgradeReport_Files\*.*
 rmdir /s /q _UpgradeReport_Files
-Del /s /q Debug\*.*
-rmdir Debug
-Del /s /q Debug(Macro)\*.*
-rmdir Debug(Macro)
-Del /s /q Debug(Macro)\*.*
-Del /s /q ReleaseO2\*.*
-rmdir ReleaseO2
+rem Del /s /q Debug\*.*
+rem rmdir Debug
+rem Del /s /q Debug(Macro)\*.*
+rem rmdir Debug(Macro)
+rem Del /s /q Debug(Macro)\*.*
+rem Del /s /q ReleaseO2\*.*
+rem rmdir ReleaseO2
