@@ -5,7 +5,7 @@ var out=[];
 var map={};var map2arr={};
 var seps=to_map("0123456789 !,+?-.()=:[]<>/\"'¦¬\;*`&_%{}ў");
 //function f(s){for(var i=0;i<s.length;i++)if(!(s[i] in allows))seps[s[i]]=1;};
-function reg(from_raw,who_raw){var from=from_raw.toLowerCase();var who=who_raw.toLowerCase();if(!(who in map2arr))map2arr[who]={};map2arr[who][from]=1;};
+function reg(from_raw,who_raw){var from=from_raw.toLowerCase();var who=who_raw.toLowerCase();if(from==who)return;if(!(who in map2arr))map2arr[who]={};map2arr[who][from]=1;};
 function reg_words_from(from,s){
   var tmp="";
   for(var i=0;i<s.length;i++)
@@ -29,5 +29,5 @@ for(var i=0;i<arr.length;i++){
 }
 //return map["программа"];
 var wmt20={};
-for(var k in map2arr){if(Object.keys(map2arr[k]).length!=10)continue;if(!k in map)continue;wmt20[k]=Object.keys(map2arr[k]);}
+for(var k in map2arr){if(Object.keys(map2arr[k]).length!=5)continue;if(!(k in map))continue;wmt20[k]=Object.keys(map2arr[k]);}
 return JSON.stringify(wmt20,null,"  ");Object.keys(wmt20).length;out.length;out.length;
