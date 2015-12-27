@@ -15,6 +15,8 @@ function gen_dips(list){
   for(var i=0;i<list.length;i+=2)out+=gen_dip(list[i+0],list[i+1]);
   return out;
 }
+function list_to_arr(arr){var out=[];for(var i=0;i<arr.length;i++){out+=String.fromCharCode(arr[i]);}return out;}
+function gen_dips_rus(){return gen_dips(list_to_arr([0x0430,0x044F,0x0410,0x042F]))+list_to_arr([0x0451,0x0401]);}
 function go()
 {
   /*var code=document.getElementById("code").value;
