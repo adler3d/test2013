@@ -4,6 +4,17 @@
   <meta charset="utf-8">
   <title>eval on JS</title><style type="text/css">textarea{width:99%}</style>
 <script>
+function gen_dip(a,z){
+  var out="";
+  var f=function(e){return e.charCodeAt(0);}
+  for(var i=f(a);i<=f(z);i++)out+=String.fromCharCode(i);
+  return out;
+}
+function gen_dips(list){
+  var out="";
+  for(var i=0;i<list.length;i+=2)out+=gen_dip(list[i+0],list[i+1]);
+  return out;
+}
 function go()
 {
   /*var code=document.getElementById("code").value;
