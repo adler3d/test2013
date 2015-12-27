@@ -1,6 +1,6 @@
 function to_map(arr){var out={};for(var i=0;i<arr.length;i++)out[arr[i]]=1;return out;}
 var allows=to_map(gen_dips_rus()+gen_dips("AZaz"));
-var arr=POST['data'].split("\n");
+var arr=(1?document.getElementById("out").value:POST['data']).split("\n");
 var out=[];
 var map={};var map2arr={};
 var seps=to_map("0123456789 !,+?-.()=:[]<>/\"'¦¬\;*`&_%{}ў");
@@ -28,6 +28,6 @@ for(var i=0;i<arr.length;i++){
   if(!(a[0] in map))map[a[0]]=ex;
 }
 //return map["программа"];
-var wmt20={};
-for(var k in map2arr){if(Object.keys(map2arr[k]).length!=5)continue;if(!(k in map))continue;wmt20[k]=Object.keys(map2arr[k]);}
-return JSON.stringify(wmt20,null,"  ");Object.keys(wmt20).length;out.length;out.length;
+var wmt20={};var norm=[];
+for(var k in map2arr){if(Object.keys(map2arr[k]).length<2)continue;if(!(k in map))continue;norm.push(map[k]);continue;wmt20[k]=Object.keys(map2arr[k]);}
+return norm.sort().length+")\n"+norm.join("\n");JSON.stringify(wmt20,null,"  ");Object.keys(wmt20).length;out.length;out.length;
