@@ -13,4 +13,16 @@ arr=arr.map(x=>{
   var b=get_body(x);
   return !valid(b)?x:get_bef(x)+conv(b)+get_aft(x);
 });
-return [arr0[0]].concat(arr).join(provar);// arr2str();//.filter(q=>valid(get_body(q))));//.length;//[0];
+var toug_gen=(func,bef,aft)=>{
+  var shit=s=>s.split(func).join("").split(bef).join(aft).split("));").join(");");
+  var f=s=>s.split("\n").map(e=>e.indexOf(func)<0?e:shit(e)).join("\n");
+  return f;
+}
+var need_slow_version=1;
+var toug=s=>{
+  if(!need_slow_version)return s;
+  s=toug_gen("QapStrFinder::fromArr(")(s);
+  s=toug_gen("CharMask::fromStr(","\");","\";")(s);
+  return s;
+}
+return toug([arr0[0]].concat(arr).join(provar));// arr2str();//.filter(q=>valid(get_body(q))));//.length;//[0];
