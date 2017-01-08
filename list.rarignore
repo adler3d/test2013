@@ -26,3 +26,5 @@ Debug\*.*
 Debug(Macro)\*.*
 ReleaseO2\*.*
 *.rar
+*.ipch
+*\ipch
