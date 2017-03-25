@@ -15,4 +15,4 @@ pause
 :fail
 pause
 :end
-exit /b 2
+@exit /b 2
