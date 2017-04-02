@@ -1,4 +1,4 @@
-void make_screen_shoot(const char*fn,IDirect3DSurface9*psrc=nullptr)
+void make_screen_shot(const char*fn,IDirect3DSurface9*psrc=nullptr)
 {
   IDirect3DSurface9*surface;
   auto*pDev=qDev.pDev;
