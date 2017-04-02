@@ -2,7 +2,13 @@ void make_screen_shoot(const char*fn,IDirect3DSurface9*psrc=nullptr)
 {
   IDirect3DSurface9*surface;
   auto*pDev=qDev.pDev;
-  pDev->CreateOffscreenPlainSurface(consize.x,consize.y,D9Dev.PresParams.pp.BackBufferFormat,D3DPOOL_SYSTEMMEM,&surface,NULL);
+  if(psrc){
+    pDev->CreateOffscreenPlainSurface(consize.x,consize.y,D9Dev.PresParams.pp.BackBufferFormat,D3DPOOL_SYSTEMMEM,&surface,NULL);
+  }else{
+    D3DDISPLAYMODE mode;
+    pDev->GetDisplayMode(0,&mode);
+    pDev->CreateOffscreenPlainSurface(mode.Width,mode.Height,D3DFMT_A8R8G8B8,D3DPOOL_SCRATCH,&surface,NULL);
+  }
   auto retval=psrc?pDev->GetRenderTargetData(psrc,surface):pDev->GetFrontBufferData(0,surface);
   if(retval==D3D_OK)
   {
