@@ -1,3 +1,42 @@
+/*
+  //usage:
+  void FakeSceneRenderEx()
+  {
+    auto&Dev=D9Dev;
+    vec2i ClientSize=win.GetClientSize();
+    if(!Dev.BeginScene())return;
+    {
+      D3DVIEWPORT9 ViewPort={0,0,ClientSize.x,ClientSize.y,-1.f,+1.f};
+      Dev.pDev->SetViewport(&ViewPort);
+      Dev.Set2D(vec2i(0,0),1.0,0,&ClientSize);
+      Dev.Clear2D(0xffc8c8c8);
+      qDev.NextFrame();
+      SceneDoDraw();
+    }
+    if(!Dev.EndScene())return;
+  }
+  #include "QapLite.ScreenShot.inl"
+  void DoPreMove()
+  {
+    IF_INIT(need_init)
+    {
+      auto&pDev=qDev.pDev;  //QapDebugMsg(IToS(consize.x));
+      IDirect3DSurface9*pout=nullptr;
+      bool retval=pDev->CreateRenderTarget(consize.x,consize.y,D9Dev.PresParams.pp.BackBufferFormat,D3DMULTISAMPLE_NONE,0,0,&pout,0);
+      QapDebugMsg("retval="+IToS(retval));
+      IDirect3DSurface9*pold=nullptr;
+      pDev->GetRenderTarget(0,&pold);
+      pDev->SetRenderTarget(0,pout);
+      FakeSceneRenderEx();
+      make_screen_shot("rt.png",pout);
+      pDev->SetRenderTarget(0,pold);
+      pold->Release();
+      pold=nullptr;
+      pout->Release();
+      pout=nullptr;
+    }
+  }
+*/
 void make_screen_shot(const char*fn,IDirect3DSurface9*psrc=nullptr)
 {
   IDirect3DSurface9*surface;
