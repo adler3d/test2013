@@ -1,4 +1,3 @@
-// use as TGame method 
 void make_screen_shoot(const char*fn)
 {
   IDirect3DSurface9*surface;
@@ -32,6 +31,7 @@ void make_screen_shoot(const char*fn)
     struct DynamicContext
     {
       DynamicContext(){DoReset();}
+     ~DynamicContext(){if(pProc)free();}
       typedef decltype(&t_hidden::D3DXSaveSurfaceToFileA) PGIL;
       HMODULE Module;
       PGIL pProc;
