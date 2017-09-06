@@ -33,9 +33,9 @@ function go()
 <body>
     <img style="display:none" src="http://adler.hol.es/github/dir.png" />
     <p><b>code:</b></p>
-    <p><textarea spellcheck="false" rows="15" name="code" id="code"></textarea></p>
+    <p><textarea spellcheck="false" rows="15" name="code" id="code" onkeypress="if(event.keyCode==10||(event.ctrlKey&&event.keyCode==13))go();"></textarea></p>
     <p><b>data:</b></p>
-    <p><textarea spellcheck="false" rows="10" name="data" id="data"></textarea></p>
+    <p><textarea spellcheck="false" rows="10" name="data" id="data" onkeypress="if(event.keyCode==10||(event.ctrlKey&&event.keyCode==13))go();"></textarea></p>
     <p><button onclick="go();">Go</button></p>
     <p><textarea spellcheck="false" rows="10" name="out" id="out"></textarea></p>
   <h2>version 1.0</h2>
