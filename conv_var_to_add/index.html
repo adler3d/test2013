@@ -13,6 +13,28 @@ function go()
   document.getElementById("out").value=g_result;
   return g_result;
 }
+function go_from_json()
+{
+  var g_result=null;g_result=(function(POST){
+  //===
+    var jp=JSON.parse;
+    var handle=e=>{
+      var t=e.split(":").map(e=>e.trim()).map(e=>{if(e.slice(-1)==",")return e.slice(0,-1);return e;})
+      var k=jp(t[0]);
+      var v=t[1];
+      var is_real="0123456789".split("").includes(v[0]);
+      var out_t=is_real?"real":v;
+      var out_n=k;
+      if(is_real)out_n+="="+v;
+      out_n+=";";
+      return out_t+" "+out_n;
+    }
+    return POST.data.split("\n").map(handle).join("\n");
+  //===
+  }({data:document.getElementById('data').value}));
+  document.getElementById("out").value=g_result;
+  return g_result;
+}
 </script>
 </head>
 <body>
@@ -31,8 +53,8 @@ return "#define DEF_PRO_VARIABLE(ADD)\\\n"+arr.join("\n")+"\n//===\n#include \"d
     </div>
     <p><b>data:</b></p>
     <p><textarea spellcheck="false" rows="20" name="data" id="data"></textarea></p>
-    <p><button onclick="go();">Go</button></p>
+    <p><button onclick="go();">Go&nbsp;<i>//from cpp</i></button>&nbsp;&nbsp;&nbsp;<button onclick="go_from_json();">Go&nbsp;<i>//from JSON</i></button></p>
     <p><textarea spellcheck="false" rows="20" name="out" id="out"></textarea></p>
   <pre>see:     <a href="defproinit.inl">defproinit.inl</a>     <a href="defprovar.inl">defprovar.inl</a></pre>
-  <h2>version 1.0</h2>
+  <h2>version 1.1</h2>
 </body></html>
