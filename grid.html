@@ -1,14 +1,14 @@
 <html><head><script>
 var ok=()=>{
-var g=document.getElementById("grid");var c=g.getContext("2d");
-var w=512;var h=512;var a={'width':'w','height':'h'};var dbc={'width':'clientWidth','height':'clientHeight'};
-for(var k in a){var dbv=document.body[dbc[k]];var v=dbv-32+0*window.screen[k];g[k]=v;eval(a[k]+'=v;');}
-document.title=JSON.stringify({w,h});
-var fix=(x,dx)=>((x/dx)|0)*dx;
-var ls=2;var dv=64;var dx=dv;var dy=dv;var tw=fix(w,dx);var th=fix(h,dy);
-for(var x=ls*0.5;x<w;x+=dx){c.moveTo(x,0);c.lineTo(x,th+ls);}
-for(var y=ls*0.5;y<h;y+=dy){c.moveTo(0,y);c.lineTo(tw+ls,y);}
-c.lineWidth=ls;c.strokeStyle="#000";c.stroke();
+  var g=document.getElementById("grid");var c=g.getContext("2d");
+  var w=512;var h=512;var a={'width':'w','height':'h'};var dbc={'width':'clientWidth','height':'clientHeight'};
+  for(var k in a){var dbv=document.body[dbc[k]];var v=dbv-32+0*window.screen[k];g[k]=v;eval(a[k]+'=v;');}
+  document.title=JSON.stringify({w,h});
+  var fix=(x,dx)=>((x/dx)|0)*dx;
+  var ls=2;var dv=64;var dx=dv;var dy=dv;var tw=fix(w,dx);var th=fix(h,dy);
+  for(var x=ls*0.5;x<w;x+=dx){c.moveTo(x,0);c.lineTo(x,th+ls);}
+  for(var y=ls*0.5;y<h;y+=dy){c.moveTo(0,y);c.lineTo(tw+ls,y);}
+  c.lineWidth=ls;c.strokeStyle="#000";c.stroke();
 };
 </script></head>
 <body onload="ok();"><center><canvas id="grid"></canvas></center></body></html>
