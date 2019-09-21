@@ -1,0 +1,31 @@
+<html><head><script>
+var ok=()=>{
+  var g=document.getElementById("grid");var c=g.getContext("2d");
+  var w=512;var h=512;var a={'width':'w','height':'h'};var dbc={'width':'clientWidth','height':'clientHeight'};
+  for(var k in a){var dbv=document.body[dbc[k]];var v=dbv-32+0*window.screen[k];g[k]=v;eval(a[k]+'=v;');}
+  document.title=JSON.stringify({w,h});
+  var fix=(x,dx)=>((x/dx)|0)*dx;
+  var ls=2;var dv=64;var dx=dv;var dy=dv;var tw=fix(w,dx);var th=fix(h,dy);
+  c.beginPath(); 
+  for(var x=ls*0.5;x<w;x+=dx){c.moveTo(x,0);c.lineTo(x,th+ls);}
+  for(var y=ls*0.5;y<h;y+=dy){c.moveTo(0,y);c.lineTo(tw+ls,y);}
+  c.closePath(); 
+  c.lineWidth=ls;c.strokeStyle="#000";c.stroke();
+  setInterval(()=>window.requestAnimationFrame(()=>upd(g,c,w,h)),60);
+};
+var t=0;
+var line=(c,a,b)=>{c.moveTo(a.x,a.y);c.lineTo(b.x,b.y);}
+var vec2d=(x,y)=>{return {x,y};}
+var upd=(g,c,w,h)=>{
+  t++;
+  var ls=2;
+  var r=320;var ang=t*6.28/60;
+  c.clearRect(w/2-r,h/2-r,r+r,r+r);
+  c.fillStyle="#FFF";
+  c.beginPath(); 
+  line(c,vec2d(w/2,h/2),vec2d(w/2+Math.cos(ang)*r,h/2+r*Math.sin(ang)));
+  c.lineWidth=ls;c.strokeStyle="#000";c.stroke();
+  c.closePath(); 
+}
+</script></head>
+<body onload="ok();"><center><canvas id="grid"></canvas></center></body></html>
