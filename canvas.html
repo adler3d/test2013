@@ -19,17 +19,23 @@ var draw_grid=(c,w,h)=>{
   c.closePath(); 
   c.lineWidth=ls;c.strokeStyle="#000";c.stroke();
 }
+var rnd=()=>Math.random();
+var points=[];for(var i=0;i<1000;i++){points.push(vec2d(rnd(),rnd()));}
 var upd=(g,c,w,h)=>{
   t++;
-  var ls=2;
-  var r=320;var ang=t*3.14/60;
+  var ls=2;var hw=w*0.5;hh=h*0.5; var r=128;
   //c.clearRect(w/2-r,h/2-r,r+r,r+r);
   c.fillStyle="#FFF";c.clearRect(0,0,w,h);
   draw_grid(c,w,h);
-  c.beginPath();
-  line(c,vec2d(w/2,h/2),vec2d(w/2+Math.cos(ang)*r,h/2+r*Math.sin(ang)));
-  c.lineWidth=ls;c.strokeStyle="#000";c.stroke();
-  c.closePath();
+  var draw_rot_line=(p,t)=>{
+    var ang=t*3.14*2/60;
+    c.beginPath();
+    line(c,p,vec2d(p.x+Math.cos(ang)*r,p.y+r*Math.sin(ang)));
+    c.lineWidth=ls;c.strokeStyle="#000";c.stroke();
+    c.closePath();
+  }
+  //for(var x=-200;x<200;x+=16)for(var y=-200;y<200;y+=16){draw_rot_line(vec2d(w/2+x,h/2+y),(t+x+y)*0.3);}
+  points.map(p=>vec2d(hw+(p.x-0.5)*w,hh+(p.y-0.5)*h)).map(p=>{draw_rot_line(p,(t+p.x+p.y)*0.3);});
   window.requestAnimationFrame(()=>upd(g,c,w,h));
 }
 </script></head>
