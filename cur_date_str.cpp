@@ -1,4 +1,5 @@
 //cls&&cl /Od /DEBUG /ZI cur_data_str.cpp /nologo /EHsc
+//cls&&cl /O2 cur_data_str.cpp /nologo /EHsc
 #define NOMENUS
 #define NOHELP
 #define NOPROFILER
@@ -101,6 +102,7 @@ void kb_type_char(char c){
 }
 
 void kb_type(string s){for(auto&c:s)kb_type_char(c);}
+static bool IsKeyDown(int vKey){int i=GetAsyncKeyState(vKey);return i<0;}
 
 void on_hot_key(){ 
   auto s=cur_date_str();
@@ -108,7 +110,12 @@ void on_hot_key(){
   printf("[%s]: WM_HOTKEY received from app: %s\n",s.c_str(),app_name.c_str());
   if(split(app_name,"notepad++.exe").size()<=1){return;}
   keybd_event(VkKeyScan('T'),0x9e,KEYEVENTF_KEYUP,0);
-  keybd_event(VK_MENU,0x9e,KEYEVENTF_KEYUP,0);
+  {auto K=VK_LMENU;if(IsKeyDown(K))keybd_event(K,0x9e,KEYEVENTF_KEYUP,0);}
+  {auto K=VK_RMENU;if(IsKeyDown(K)){
+    printf("look like keybd_event don't work with VK_RMENU :(\n");
+    return;
+  }}
+  {auto K=VK_MENU;if(IsKeyDown(K))keybd_event(K,0x9e,KEYEVENTF_KEYUP,0);};
   kb_type(s);
 }
 
@@ -128,12 +135,9 @@ void winapi_set_hotkey_handler(...){
 }
 
 int main(){
+  printf("cur_date_str.exe - app that insert current date when you press ALT+T inside notepad++.exe\n");
+  printf("[   2020.09.17 11:46:51   ]\n");
+  printf("https://github.com/adler3d/test2013/blob/master/cur_date_str.cpp\n");
   winapi_set_hotkey_handler("ALT+T",on_hot_key);
   return 0;
 }
-/*
----
-2020.09.17 11:14:56
-
-done
-*/
