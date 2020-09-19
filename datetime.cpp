@@ -51,7 +51,7 @@ struct FuncItem{
   ShortcutKey *_pShKey;
 };
 
-const int nbFunc = 2;
+const int nbFunc = 3;
 extern FuncItem funcItem[nbFunc];
 extern NppData nppData;
 
@@ -104,6 +104,8 @@ void insert_datetime(){
   insert_str_impl(s);
 }
 
+void insert_just_datetime(){insert_str_impl(local_cur_date_str_v3());}
+
 void insert_link_to_source_code(){
   auto s="---\n"+local_cur_date_str_v3()+"\n";
   s+="https://github.com/adler3d/test2013/blob/master/datetime.cpp";
@@ -112,7 +114,8 @@ void insert_link_to_source_code(){
     
 void commandMenuInit(){
   setCommand(0, TEXT("insert_datetime"), insert_datetime, &ALT_T, false);
-  setCommand(1, TEXT("insert_link_to_source_code"), insert_link_to_source_code, NULL, false);
+  setCommand(1, TEXT("insert_just_datetime"), insert_just_datetime, NULL, false);
+  setCommand(2, TEXT("insert_link_to_source_code"), insert_link_to_source_code, NULL, false);
 }
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("datetime");
