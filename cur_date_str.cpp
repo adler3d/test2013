@@ -137,6 +137,9 @@ void winapi_set_hotkey_handler(...){
   size_t KEY=T;
   if(RegisterHotKey(NULL,1,MOD_ALT|MOD_NOREPEAT,KEY)){
     printf("[%s]: begin\n",local_cur_date_str().c_str());
+  }else{
+    printf("[%s]: RegisterHotKey faild - look like hotkey ALT+T already taken by other program.\n",local_cur_date_str().c_str());
+    return;
   }
  
   MSG msg={0};
@@ -149,7 +152,7 @@ void winapi_set_hotkey_handler(...){
 
 int main(){
   printf("cur_date_str.exe - app that insert local datetime when you press ALT+T inside notepad++.exe\n");
-  printf("[V4.5 build at 13:00:01 2020.09.19]\n");
+  printf("[V4.6 build at 13:44:57 2020.09.19]\n");
   printf("https://github.com/adler3d/test2013/blob/master/cur_date_str.cpp\n");
   winapi_set_hotkey_handler("ALT+T",on_hot_key);
   return 0;
