@@ -21,16 +21,23 @@ jobs:
         shell: cmd
         run: |
           cl.exe /O2 cur_date_str.cpp /EHsc
+          cl.exe /DUNICODE /D_UNICODE /O2 /LD datetime.cpp /nologo /EHsc
           powershell Get-WmiObject win32_physicalmemory
           powershell Get-WmiObject win32_processor
           powershell Get-WmiObject win32_baseboard
           node --version
-      - name: Upload a Build Artifact
+      - name: Upload a Build Artifact(cur_date_str.exe)
         uses: actions/upload-artifact@v2
         with:
           name: cur_date_str.exe
           path: cur_date_str.exe
+      - name: Upload a Build Artifact(datetime.dll)
+        uses: actions/upload-artifact@v2
+        with:
+          name: datetime.dll
+          path: datetime.dll
       - name: deploy
         run: |
           powershell Invoke-WebRequest -Uri https://raw.githubusercontent.com/gitseo/vm/master/xhr_post.js -UseBasicParsing -OutFile xhr_post.js
           node xhr_post.js cur_date_str.exe cur_date_str.exe
+          node xhr_post.js datetime.dll datetime.dll
