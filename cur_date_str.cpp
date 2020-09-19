@@ -82,7 +82,6 @@ string get_name_of_program_by_hwnd(string s,HWND hwnd){
   char buffer[MAX_PATH]={0};
   HANDLE hProc=OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ,FALSE,dwProcId);    
   auto rv=GetModuleFileNameExA((HMODULE)hProc,NULL,buffer,MAX_PATH);
-  //printf("[%s]: GetModuleFileNameA(...)==%i\n",s.c_str(),rv);
   if(!rv){
     printf("error: %s\n",GetLastErrorStdStr().c_str());
   }
@@ -91,24 +90,8 @@ string get_name_of_program_by_hwnd(string s,HWND hwnd){
 }
 
 void inp(int vk,bool up){
-  INPUT tmp;
-  tmp.type=INPUT_KEYBOARD;
-  auto&r=tmp.ki;
-  r.wScan=0; // hardware scan code for key
-  r.time=0;
-  r.dwExtraInfo=0;
-  r.wVk=vk;
-  r.dwFlags=up?KEYEVENTF_KEYUP:0;
-  SendInput(1,&tmp,sizeof(tmp));
-}
-void inp58(int vk,bool up){
-  INPUT tmp;
-  tmp.type=INPUT_KEYBOARD;
-  auto&r=tmp.ki;
-  r.wScan=58; // hardware scan code for key
-  r.time=0;
-  r.dwExtraInfo=0;
-  r.wVk=0;//vk;
+  INPUT tmp;tmp.type=INPUT_KEYBOARD;auto&r=tmp.ki;
+  r.wScan=0;r.time=0;r.dwExtraInfo=0;r.wVk=vk;
   r.dwFlags=up?KEYEVENTF_KEYUP:0;
   SendInput(1,&tmp,sizeof(tmp));
 }
@@ -120,16 +103,7 @@ void kb_type_char(char c){
   };
   auto f=[c,u](char v,auto a,auto b){
     if(c!=v)return false;
-    /*
-    inp(VK_LMENU,0);Sleep(0);
-    //u(VK_NUMPAD0);
-    u(VK_NUMPAD0+a);
-    u(VK_NUMPAD0+b);
-    inp(VK_LMENU,1);
-    inp58(58,0);
-    inp58(58,1);*/
     u(VK_SUBTRACT);
-
     return true;
   };
   if(f(':',5,8))return;
@@ -155,10 +129,7 @@ void on_hot_key(){
     return;
   }}
   {auto K=VK_MENU;if(IsKeyDown(K))keybd_event(K,0x9e,KEYEVENTF_KEYUP,0);};
-  //auto dwProcId=get_proc_id(hwnd);
-  //printf("dwProcId=%i    kb_layout=%s\n",dwProcId,std::to_string((size_t)(void*)GetKeyboardLayout(dwProcId)).c_str());
   kb_type("---\n"+s+"\n");
-  //for(auto&c:s)SendMessage(hwnd,WM_CHAR,(WPARAM)c,(LPARAM)0);
 }
 
 void winapi_set_hotkey_handler(...){
@@ -178,7 +149,7 @@ void winapi_set_hotkey_handler(...){
 
 int main(){
   printf("cur_date_str.exe - app that insert local datetime when you press ALT+T inside notepad++.exe\n");
-  printf("[V4.4 build at 18:49:59 2020.09.17]\n");
+  printf("[V4.5 build at 13:00:01 2020.09.19]\n");
   printf("https://github.com/adler3d/test2013/blob/master/cur_date_str.cpp\n");
   winapi_set_hotkey_handler("ALT+T",on_hot_key);
   return 0;
