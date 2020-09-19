@@ -57,14 +57,14 @@ static vector<string> split(const string&s,const string&needle){
   return arr;
 }
 
-static string conv_tm_to_str(const std::tm&t){
+static string conv_tm_to_str_v2(const std::tm&t){
   auto*ptm=&t;
   char buff[128];
-  sprintf(&buff[0],"%04u.%02u.%02u %02u:%02u:%02u\0",
+  sprintf(&buff[0],"%02u:%02u:%02u %04u.%02u.%02u\0",
+    ptm->tm_hour,ptm->tm_min,ptm->tm_sec,
     1900+ptm->tm_year,
     ptm->tm_mon+1,
-    ptm->tm_mday,
-    ptm->tm_hour,ptm->tm_min,ptm->tm_sec
+    ptm->tm_mday
   );
   return buff;
 }
@@ -72,12 +72,13 @@ static string conv_tm_to_str(const std::tm&t){
 static string local_cur_date_str(){
   time_t rawtime;time(&rawtime);
   auto tm=*localtime(&rawtime);
-  return conv_tm_to_str(tm);
+  return conv_tm_to_str_v2(tm);
 }
 
+DWORD get_proc_id(HWND hwnd){DWORD dwProcId=0;GetWindowThreadProcessId(hwnd,&dwProcId);return dwProcId;}
+
 string get_name_of_program_by_hwnd(string s,HWND hwnd){    
-  DWORD dwProcId=0;
-  if(!GetWindowThreadProcessId(hwnd,&dwProcId))return NULL;
+  auto dwProcId=get_proc_id(hwnd);
   char buffer[MAX_PATH]={0};
   HANDLE hProc=OpenProcess(PROCESS_QUERY_INFORMATION|PROCESS_VM_READ,FALSE,dwProcId);    
   auto rv=GetModuleFileNameExA((HMODULE)hProc,NULL,buffer,MAX_PATH);
@@ -89,16 +90,52 @@ string get_name_of_program_by_hwnd(string s,HWND hwnd){
   return buffer;
 }
 
+void inp(int vk,bool up){
+  INPUT tmp;
+  tmp.type=INPUT_KEYBOARD;
+  auto&r=tmp.ki;
+  r.wScan=0; // hardware scan code for key
+  r.time=0;
+  r.dwExtraInfo=0;
+  r.wVk=vk;
+  r.dwFlags=up?KEYEVENTF_KEYUP:0;
+  SendInput(1,&tmp,sizeof(tmp));
+}
+void inp58(int vk,bool up){
+  INPUT tmp;
+  tmp.type=INPUT_KEYBOARD;
+  auto&r=tmp.ki;
+  r.wScan=58; // hardware scan code for key
+  r.time=0;
+  r.dwExtraInfo=0;
+  r.wVk=0;//vk;
+  r.dwFlags=up?KEYEVENTF_KEYUP:0;
+  SendInput(1,&tmp,sizeof(tmp));
+}
+
 void kb_type_char(char c){
-  if(c==':'){
-    keybd_event(VK_LSHIFT,0x9e,0,0);
-  }
+  auto u=[](auto k){
+    inp(k,0);
+    inp(k,1);
+  };
+  auto f=[c,u](char v,auto a,auto b){
+    if(c!=v)return false;
+    /*
+    inp(VK_LMENU,0);Sleep(0);
+    //u(VK_NUMPAD0);
+    u(VK_NUMPAD0+a);
+    u(VK_NUMPAD0+b);
+    inp(VK_LMENU,1);
+    inp58(58,0);
+    inp58(58,1);*/
+    u(VK_SUBTRACT);
+
+    return true;
+  };
+  if(f(':',5,8))return;
+  if(f('.',4,6))return;
   auto k=VkKeyScan(c);
-  keybd_event(k,0x9e,0,0);
-  keybd_event(k,0x9e,KEYEVENTF_KEYUP,0);
-  if(c==':'){
-    keybd_event(VK_LSHIFT,0x9e,KEYEVENTF_KEYUP,0);
-  }
+  u(k);
 }
 
 void kb_type(string s){for(auto&c:s)kb_type_char(c);}
@@ -106,9 +143,11 @@ static bool IsKeyDown(int vKey){int i=GetAsyncKeyState(vKey);return i<0;}
 
 void on_hot_key(){ 
   auto s=local_cur_date_str();
-  string app_name=get_name_of_program_by_hwnd(s,GetForegroundWindow());
+  auto hwnd=GetForegroundWindow();
+  string app_name=get_name_of_program_by_hwnd(s,hwnd);
   printf("[%s]: WM_HOTKEY received from app: %s\n",s.c_str(),app_name.c_str());
   if(split(app_name,"notepad++.exe").size()<=1){return;}
+
   keybd_event(VkKeyScan('T'),0x9e,KEYEVENTF_KEYUP,0);
   {auto K=VK_LMENU;if(IsKeyDown(K))keybd_event(K,0x9e,KEYEVENTF_KEYUP,0);}
   {auto K=VK_RMENU;if(IsKeyDown(K)){
@@ -116,7 +155,10 @@ void on_hot_key(){
     return;
   }}
   {auto K=VK_MENU;if(IsKeyDown(K))keybd_event(K,0x9e,KEYEVENTF_KEYUP,0);};
-  kb_type(s);
+  //auto dwProcId=get_proc_id(hwnd);
+  //printf("dwProcId=%i    kb_layout=%s\n",dwProcId,std::to_string((size_t)(void*)GetKeyboardLayout(dwProcId)).c_str());
+  kb_type("---\n"+s+"\n");
+  //for(auto&c:s)SendMessage(hwnd,WM_CHAR,(WPARAM)c,(LPARAM)0);
 }
 
 void winapi_set_hotkey_handler(...){
@@ -136,7 +178,7 @@ void winapi_set_hotkey_handler(...){
 
 int main(){
   printf("cur_date_str.exe - app that insert local datetime when you press ALT+T inside notepad++.exe\n");
-  printf("[   2020.09.17 14:57:50   ]\n");
+  printf("[V4.4 build at 18:49:59 2020.09.17]\n");
   printf("https://github.com/adler3d/test2013/blob/master/cur_date_str.cpp\n");
   winapi_set_hotkey_handler("ALT+T",on_hot_key);
   return 0;
