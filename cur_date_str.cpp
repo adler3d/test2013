@@ -59,8 +59,6 @@ static vector<string> split(const string&s,const string&needle){
 
 static string local_cur_date_str_v3(){
   FILETIME ft;GetSystemTimePreciseAsFileTime(&ft);
-  auto ts=ULARGE_INTEGER{ft.dwLowDateTime,ft.dwHighDateTime};
-  auto us=(ts.QuadPart)%(10*1000*1000);
   SYSTEMTIME st;FileTimeToSystemTime(&ft,&st);
   auto lt=st;GetLocalTime(&lt);
   std::tm t={0};
