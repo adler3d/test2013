@@ -138,7 +138,7 @@ void winapi_set_hotkey_handler(...){
   if(RegisterHotKey(NULL,1,MOD_ALT|MOD_NOREPEAT,KEY)){
     printf("[%s]: begin\n",local_cur_date_str().c_str());
   }else{
-    printf("[%s]: RegisterHotKey faild - look like hotkey ALT+T already taken by other program.\n",local_cur_date_str().c_str());
+    printf("[%s]: RegisterHotKey failed - look like hotkey ALT+T already taken by other program.\n",local_cur_date_str().c_str());
     return;
   }
  
