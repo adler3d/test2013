@@ -159,9 +159,12 @@ void winapi_set_hotkey_handler(...){
 }
 
 int main(){
-  printf("cur_date_str.exe - app that insert local datetime when you press ALT+T inside notepad++.exe\n");
-  printf("[V5.0 build at 19:38:33.363 2020.09.19]\n");
-  printf("   https://github.com/adler3d/test2013/blob/master/cur_date_str.cpp\n");
+  printf("[V5.0 build at 21:09:13.531 2020.09.19]\n");
+  printf("   cur_date_str.exe - app that insert local datetime when you press ALT+T inside notepad++.exe\n");
+  printf("   source code:\n");
+  printf("      https://github.com/adler3d/test2013/blob/master/cur_date_str.cpp\n");
+  printf("   also look at new version(a plugin for notepad++):\n");
+  printf("      https://github.com/adler3d/test2013/blob/master/datetime.cpp");
   winapi_set_hotkey_handler("ALT+T",on_hot_key);
   return 0;
 }
