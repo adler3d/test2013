@@ -51,7 +51,7 @@ struct FuncItem{
   ShortcutKey *_pShKey;
 };
 
-const int nbFunc = 1;
+const int nbFunc = 2;
 extern FuncItem funcItem[nbFunc];
 extern NppData nppData;
 
@@ -112,7 +112,7 @@ void insert_link_to_source_code(){
     
 void commandMenuInit(){
   setCommand(0, TEXT("insert_datetime"), insert_datetime, &ALT_T, false);
-  setCommand(0, TEXT("insert_link_to_source_code"), insert_link_to_source_code, NULL, false);
+  setCommand(1, TEXT("insert_link_to_source_code"), insert_link_to_source_code, NULL, false);
 }
 
 const TCHAR NPP_PLUGIN_NAME[] = TEXT("datetime");
