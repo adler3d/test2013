@@ -21,6 +21,17 @@ cl /DUNICODE /D_UNICODE /O2 /LD datetime.cpp /nologo /EHsc
 #define NPPM_GETCURRENTSCINTILLA  (NPPMSG + 4)
 #define SCI_REPLACESEL 2170
 
+#define SCI_GETSELECTIONSTART 2143
+#define SCI_GETSELECTIONEND 2145
+#define SCI_GETSELTEXT 2161
+#define SCI_GETCURRENTPOS 2008
+
+#define	RUNCOMMAND_USER    (WM_USER + 3000)
+#define NPPM_GETCURRENTLINE			(RUNCOMMAND_USER + CURRENT_LINE)
+#define NPPM_GETCURRENTCOLUMN			(RUNCOMMAND_USER + CURRENT_COLUMN)
+#define CURRENT_LINE 8
+#define CURRENT_COLUMN 9
+
 struct SCNotification{};
 
 const int nbChar = 64;
@@ -90,17 +101,45 @@ static string local_cur_date_str_v3(){
   return buff;
 }
 
-void insert_str_impl(const string&str){
-  int which=-1;
-  ::SendMessage(nppData._nppHandle,NPPM_GETCURRENTSCINTILLA,0,(LPARAM)&which);
-  if(which==-1)return;
-  HWND curScintilla = (which == 0)?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
+HWND getCurrentScintillaHandle(){
+  int out=-1;
+  ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&out);
+	return !out?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
+};
 
-  ::SendMessage(curScintilla, SCI_REPLACESEL, 0, (LPARAM)str.c_str());
+void insert_str_impl(const string&str){
+  auto curScintilla=getCurrentScintillaHandle();
+  ::SendMessage(curScintilla,SCI_REPLACESEL,0,(LPARAM)str.c_str());
+}
+
+string get_selected_text(){
+  auto curScintilla=getCurrentScintillaHandle();
+  auto start=::SendMessage(curScintilla,SCI_GETSELECTIONSTART,0,0);
+	auto end=::SendMessage(curScintilla,SCI_GETSELECTIONEND,0,0);
+	if(end<start)std::swap(start,end);
+
+	auto n=end-start;
+  if(!n)return "";
+
+  string s;s.resize(n+1);auto*p=&s[0];
+  ::SendMessage(curScintilla,SCI_GETSELTEXT,0,(LPARAM)p);
+  return s;
+}
+
+struct t_curpos{int x=0;int y=0;int pos=0;};
+t_curpos curpos(){
+  auto curScintilla=getCurrentScintillaHandle();
+  t_curpos out;
+  out.pos=::SendMessage(curScintilla,SCI_GETCURRENTPOS,0,0);
+  out.y=::SendMessage(nppData._nppHandle,NPPM_GETCURRENTLINE,0,0);
+  out.x=::SendMessage(nppData._nppHandle,NPPM_GETCURRENTCOLUMN,0,0);
+  return out;
 }
 
 void insert_datetime(){
-  auto s="---\n"+local_cur_date_str_v3()+"\n";
+  auto p=curpos();
+  string br="\n";string es="";
+  auto s=(p.x==0?es:br)+"---\n"+local_cur_date_str_v3()+"\n";
   insert_str_impl(s);
 }
 
