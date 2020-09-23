@@ -17,20 +17,20 @@ cl /DUNICODE /D_UNICODE /O2 /LD datetime.cpp /nologo /EHsc
 //#include <time.h>
 #pragma comment(lib,"User32.lib")
 
-#define NPPMSG  (WM_USER + 1000)
-#define NPPM_GETCURRENTSCINTILLA  (NPPMSG + 4)
-#define SCI_REPLACESEL 2170
+#define NPPMSG                   (WM_USER + 1000)
+#define NPPM_GETCURRENTSCINTILLA (NPPMSG + 4)
+#define SCI_REPLACESEL        2170
 
 #define SCI_GETSELECTIONSTART 2143
-#define SCI_GETSELECTIONEND 2145
-#define SCI_GETSELTEXT 2161
-#define SCI_GETCURRENTPOS 2008
+#define SCI_GETSELECTIONEND   2145
+#define SCI_GETSELTEXT        2161
+#define SCI_GETCURRENTPOS     2008
 
-#define	RUNCOMMAND_USER    (WM_USER + 3000)
-#define NPPM_GETCURRENTLINE			(RUNCOMMAND_USER + CURRENT_LINE)
-#define NPPM_GETCURRENTCOLUMN			(RUNCOMMAND_USER + CURRENT_COLUMN)
-#define CURRENT_LINE 8
-#define CURRENT_COLUMN 9
+#define RUNCOMMAND_USER       (WM_USER + 3000)
+#define NPPM_GETCURRENTLINE   (RUNCOMMAND_USER + CURRENT_LINE)
+#define NPPM_GETCURRENTCOLUMN (RUNCOMMAND_USER + CURRENT_COLUMN)
+#define CURRENT_LINE          8
+#define CURRENT_COLUMN        9
 
 struct SCNotification{};
 
@@ -104,7 +104,7 @@ static string local_cur_date_str_v3(){
 HWND getCurrentScintillaHandle(){
   int out=-1;
   ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&out);
-	return !out?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
+  return !out?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
 };
 
 void insert_str_impl(const string&str){
@@ -115,10 +115,10 @@ void insert_str_impl(const string&str){
 string get_selected_text(){
   auto curScintilla=getCurrentScintillaHandle();
   auto start=::SendMessage(curScintilla,SCI_GETSELECTIONSTART,0,0);
-	auto end=::SendMessage(curScintilla,SCI_GETSELECTIONEND,0,0);
-	if(end<start)std::swap(start,end);
+  auto end=::SendMessage(curScintilla,SCI_GETSELECTIONEND,0,0);
+  if(end<start)std::swap(start,end);
 
-	auto n=end-start;
+  auto n=end-start;
   if(!n)return "";
 
   string s;s.resize(n+1);auto*p=&s[0];
