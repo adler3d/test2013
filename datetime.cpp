@@ -140,7 +140,7 @@ static string local_cur_date_str_v3(){
 HWND getCurrentScintillaHandle(){
   int out=-1;
   ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&out);
-	return !out?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
+  return !out?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
 };
 
 void insert_str_impl(const string&str){
