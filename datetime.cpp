@@ -4,6 +4,8 @@ echo this is build script
 call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvars32.bat"
 cl /DUNICODE /D_UNICODE /O2 /LD datetime.cpp /nologo /EHsc
 */
+//   set fo="C:\Users\Adler\Desktop\IndeedSnake2Day\notepad-plus-plus\PowerEditor\bin\plugins\datetime"
+//   cls&&cl /DUNICODE /D_UNICODE /O2 /LD datetime.cpp /nologo /EHsc&&@copy /Y datetime.dll %fo%
 #define NOMENUS
 #define NOHELP
 #define NOPROFILER
@@ -17,20 +19,20 @@ cl /DUNICODE /D_UNICODE /O2 /LD datetime.cpp /nologo /EHsc
 //#include <time.h>
 #pragma comment(lib,"User32.lib")
 
-#define NPPMSG                   (WM_USER + 1000)
-#define NPPM_GETCURRENTSCINTILLA (NPPMSG + 4)
-#define SCI_REPLACESEL        2170
+#define NPPMSG (WM_USER + 1000)
+#define NPPM_GETCURRENTSCINTILLA  (NPPMSG + 4)
+#define SCI_REPLACESEL 2170
 
 #define SCI_GETSELECTIONSTART 2143
-#define SCI_GETSELECTIONEND   2145
-#define SCI_GETSELTEXT        2161
-#define SCI_GETCURRENTPOS     2008
+#define SCI_GETSELECTIONEND 2145
+#define SCI_GETSELTEXT 2161
+#define SCI_GETCURRENTPOS 2008
 
-#define RUNCOMMAND_USER       (WM_USER + 3000)
+#define	RUNCOMMAND_USER       (WM_USER + 3000)
 #define NPPM_GETCURRENTLINE   (RUNCOMMAND_USER + CURRENT_LINE)
 #define NPPM_GETCURRENTCOLUMN (RUNCOMMAND_USER + CURRENT_COLUMN)
-#define CURRENT_LINE          8
-#define CURRENT_COLUMN        9
+#define CURRENT_LINE 8
+#define CURRENT_COLUMN 9
 
 struct SCNotification{};
 
@@ -80,6 +82,40 @@ bool setCommand(size_t index, TCHAR *cmdName, PFUNCPLUGINCMD pFunc, ShortcutKey 
 }
 
 using std::string;
+
+FILETIME get_systime_percise_as_filetime(){FILETIME ft;GetSystemTimePreciseAsFileTime(&ft);return ft;}
+SYSTEMTIME filetime_to_systime(const FILETIME&ft){SYSTEMTIME st;FileTimeToSystemTime(&ft,&st);return st;}
+SYSTEMTIME get_localtime(const SYSTEMTIME&src){SYSTEMTIME out;SystemTimeToTzSpecificLocalTime(0,&src,&out);return out;}
+SYSTEMTIME filetime_to_localtime(const FILETIME&ft){return get_localtime(filetime_to_systime(ft));}
+SYSTEMTIME get_percise_localtime(){return filetime_to_localtime(get_systime_percise_as_filetime());}
+string systime_to_str(const SYSTEMTIME&st){
+  #define F(VAR,FIELD)auto&VAR=st.FIELD;
+  F(Y,wYear);
+  F(M,wMonth);
+  F(D,wDay);
+  F(h,wHour);
+  F(m,wMinute);
+  F(s,wSecond);
+  F(x,wMilliseconds);
+  #undef F
+  char buff[]="YYYY.MM.DD hh:mm:ss.xxx";
+  //           0123456789 123456789 12
+  constexpr int q=10;constexpr int Z='0';
+  #define F()buff[id--]=Z+v%q;v/=q;
+  {int v=Y;int id=+3;F()F()F()F()}
+  {int v=M;int id=+6;F()F()      }
+  {int v=D;int id=+9;F()F()      }
+  {int v=h;int id=12;F()F()      }
+  {int v=m;int id=15;F()F()      }
+  {int v=s;int id=18;F()F()      }
+  {int v=x;int id=22;F()F()F()   }
+  #undef F
+  return buff;
+}
+string filetime_to_localstr(const FILETIME&ft){return systime_to_str(filetime_to_localtime(ft));}
+string local_cur_date_str_v4(){auto lt=get_percise_localtime();return systime_to_str(lt);}
+
+/*
 static string local_cur_date_str_v3(){
   FILETIME ft;GetSystemTimePreciseAsFileTime(&ft);
   SYSTEMTIME st;FileTimeToSystemTime(&ft,&st);
@@ -99,12 +135,12 @@ static string local_cur_date_str_v3(){
     Y,M,D
   );
   return buff;
-}
+}*/
 
 HWND getCurrentScintillaHandle(){
   int out=-1;
   ::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&out);
-  return !out?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
+	return !out?nppData._scintillaMainHandle:nppData._scintillaSecondHandle;
 };
 
 void insert_str_impl(const string&str){
@@ -139,14 +175,14 @@ t_curpos curpos(){
 void insert_datetime(){
   auto p=curpos();
   string br="\n";string es="";
-  auto s=(p.x==0?es:br)+"---\n"+local_cur_date_str_v3()+"\n";
+  auto s=(p.x==0?es:br)+"---\n"+local_cur_date_str_v4()+"\n";
   insert_str_impl(s);
 }
 
-void insert_just_datetime(){insert_str_impl(local_cur_date_str_v3());}
+void insert_just_datetime(){insert_str_impl(local_cur_date_str_v4());}
 
 void insert_link_to_source_code(){
-  auto s="---\n"+local_cur_date_str_v3()+"\n";
+  auto s="---\n"+local_cur_date_str_v4()+"\n";
   s+="https://github.com/adler3d/test2013/blob/master/datetime.cpp";
   insert_str_impl(s);
 }
