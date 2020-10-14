@@ -57,31 +57,39 @@ static vector<string> split(const string&s,const string&needle){
   return arr;
 }
 
-static string local_cur_date_str_v3(){
-  FILETIME ft;GetSystemTimePreciseAsFileTime(&ft);
-  SYSTEMTIME st;FileTimeToSystemTime(&ft,&st);
-  auto lt=st;GetLocalTime(&lt);
-  std::tm t={0};
-  #define F(A,B,C)t.A=lt.B+C;
-  F(tm_year,wYear,-1900);
-  F(tm_mon,wMonth,-1);
-  F(tm_wday,wDayOfWeek,0);
-  F(tm_mday,wDay,0);
-  F(tm_hour,wHour,0);
-  F(tm_min,wMinute,0);
-  F(tm_sec,wSecond,0);
+FILETIME get_systime_percise_as_filetime(){FILETIME ft;GetSystemTimePreciseAsFileTime(&ft);return ft;}
+SYSTEMTIME filetime_to_systime(const FILETIME&ft){SYSTEMTIME st;FileTimeToSystemTime(&ft,&st);return st;}
+SYSTEMTIME get_localtime(const SYSTEMTIME&src){SYSTEMTIME out;SystemTimeToTzSpecificLocalTime(0,&src,&out);return out;}
+SYSTEMTIME filetime_to_localtime(const FILETIME&ft){return get_localtime(filetime_to_systime(ft));}
+SYSTEMTIME get_percise_localtime(){return filetime_to_localtime(get_systime_percise_as_filetime());}
+string systime_to_str(const SYSTEMTIME&st){
+  #define F(VAR,FIELD)auto&VAR=st.FIELD;
+  F(Y,wYear);
+  F(M,wMonth);
+  F(D,wDay);
+  F(h,wHour);
+  F(m,wMinute);
+  F(s,wSecond);
+  F(x,wMilliseconds);
   #undef F
-  static const auto tm2str=[](const std::tm&t,int ms)->string{
-    auto*ptm=&t;char buff[128];
-    sprintf(&buff[0],"%02u:%02u:%02u.%03u %04u.%02u.%02u\0",
-      ptm->tm_hour,ptm->tm_min,ptm->tm_sec,ms,
-      1900+ptm->tm_year,ptm->tm_mon+1,ptm->tm_mday
-    );
-    return buff;
-  };
-  return tm2str(t,lt.wMilliseconds);
+  char buff[]="YYYY.MM.DD hh:mm:ss.xxx";
+  //           0123456789 123456789 12
+  constexpr int q=10;constexpr int Z='0';
+  #define F()buff[id--]=Z+v%q;v/=q;
+  {int v=Y;int id=+3;F()F()F()F()}
+  {int v=M;int id=+6;F()F()      }
+  {int v=D;int id=+9;F()F()      }
+  {int v=h;int id=12;F()F()      }
+  {int v=m;int id=15;F()F()      }
+  {int v=s;int id=18;F()F()      }
+  {int v=x;int id=22;F()F()F()   }
+  #undef F
+  return buff;
 }
-auto timestamp=local_cur_date_str_v3;
+string filetime_to_localstr(const FILETIME&ft){return systime_to_str(filetime_to_localtime(ft));}
+string local_cur_date_str_v4(){auto lt=get_percise_localtime();return systime_to_str(lt);}
+
+auto timestamp=local_cur_date_str_v4;
 
 DWORD get_proc_id(HWND hwnd){DWORD dwProcId=0;GetWindowThreadProcessId(hwnd,&dwProcId);return dwProcId;}
 
