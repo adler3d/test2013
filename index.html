@@ -347,8 +347,10 @@ function sortableTableScript() {
         }
 
         // Выбор нового направления сортировки
-        let newDir = 'asc';
-        if (currentDir === 'asc') newDir = 'desc';
+        //let newDir = 'asc';
+        //if (currentDir === 'asc') newDir = 'desc';
+        let newDir = 'desc';
+        if (currentDir === 'desc') newDir = 'asc';
 
         headers[i].setAttribute('data-sort-dir', newDir);
         const indicator = headers[i].querySelector('.sort-indicator');
