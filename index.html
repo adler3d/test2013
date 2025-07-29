@@ -234,6 +234,168 @@ function byid(s){return document.getElementById(s);}
 
 function html(s){byid("htmlout").innerHTML=s;return s;}
 
+function csv2table_v3(csvStr, sep = ",") {
+  const pcsv = parse_csv_with_head(csvStr, sep);
+  return with_style_for_center_pre_div_table(pcsv2sortabletable(pcsv), "table_main") + sortableTableScript();
+}
+
+function pcsv2sortabletable(pcsv) {
+  const head = pcsv.head;
+  const arr = pcsv.arr;
+
+  const headerHtml = head
+    .map((h, i) =>
+      `<th data-col="${i}" data-sort-dir="none" style="cursor:pointer;user-select:none;"
+           onclick="sortTable(this)">` +
+      escapeHtml(h) + // без стрелок
+      `</th>`
+    )
+    .join("");
+
+  const bodyRows = arr
+    .map(row =>
+      "<tr>" + head.map((_, i) => `<td>${escapeHtml(row[i] ?? "")}</td>`).join("") + "</tr>"
+    )
+    .join("");
+
+  return `<table>
+    <thead><tr>${headerHtml}</tr></thead>
+    <tbody>${bodyRows}</tbody>
+  </table>`;
+}
+
+// Глобальная функция сортировки, вызывается из onclick
+function sortTable(th) {
+  const table = th.closest('table');
+  const tbody = table.tBodies[0];
+  const headers = table.tHead.rows[0].cells;
+  const col = Number(th.getAttribute('data-col'));
+
+  // Определяем новое направление сортировки
+  let dir = th.getAttribute('data-sort-dir');
+  dir = (dir === 'asc') ? 'desc' : 'asc';
+
+  // Сброс всех заголовков
+  for(let h of headers) {
+    h.setAttribute('data-sort-dir', 'none');
+  }
+  th.setAttribute('data-sort-dir', dir);
+
+  // Получаем строки и сортируем
+  const rows = Array.from(tbody.rows);
+  rows.sort((a, b) => {
+    let v1 = a.cells[col].textContent.trim();
+    let v2 = b.cells[col].textContent.trim();
+
+    let n1 = parseFloat(v1.replace(',', '.'));
+    let n2 = parseFloat(v2.replace(',', '.'));
+
+    if (!isNaN(n1) && !isNaN(n2)) { v1 = n1; v2 = n2; }
+
+    if (v1 < v2) return dir === 'asc' ? -1 : 1;
+    if (v1 > v2) return dir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  // Переставляем строки в tbody
+  rows.forEach(row => tbody.appendChild(row));
+}
+function sortableTableScript() {
+  return `
+<style>
+  table {
+    border-collapse: collapse;
+    font-size: 10pt;
+    text-align: right;
+    width: 100%;
+  }
+  th, td {
+    border: 1px solid #bbb;
+    padding: 4px;
+  }
+  th {
+    text-align: center;
+    font-weight: bold;
+    background: #ccc;
+    user-select: none;
+  }
+  tbody tr:nth-child(even) {
+    background: #FEFEFE;
+  }
+  .sort-indicator {
+    font-size: 0.8em; 
+    color: #444;
+  }
+</style>
+<script>
+  (function(){
+    const table = document.querySelector('div.table_main table');
+    if (!table) return;
+
+    const tbody = table.tBodies[0];
+    const headers = table.tHead.rows[0].cells;
+
+    // Для всех заголовков ставим обработчик клика
+    for (let i = 0; i < headers.length; i++) {
+      headers[i].addEventListener('click', () => {
+        const currentDir = headers[i].getAttribute('data-sort-dir');
+        // Снимем стрелки со всех колонок
+        for (let h of headers) {
+          h.setAttribute('data-sort-dir', 'none');
+          const span = h.querySelector('.sort-indicator');
+          if (span) span.textContent = '';
+        }
+
+        // Выбор нового направления сортировки
+        let newDir = 'asc';
+        if (currentDir === 'asc') newDir = 'desc';
+
+        headers[i].setAttribute('data-sort-dir', newDir);
+        const indicator = headers[i].querySelector('.sort-indicator');
+        if (indicator) indicator.textContent = newDir === 'asc' ? '▲' : '▼';
+
+        // Получаем все строки
+        const rows = Array.from(tbody.rows);
+
+        // Определяем индекс колонки
+        const col = i;
+
+        // Функция для сравнения ячеек
+        function compareRows(r1, r2) {
+          let v1 = r1.cells[col].textContent.trim();
+          let v2 = r2.cells[col].textContent.trim();
+
+          // Пробуем привести к числу если возможно
+          const n1 = parseFloat(v1.replace(/,/g, '.')); // поддерживаем запятую как разделитель для чисел
+          const n2 = parseFloat(v2.replace(/,/g, '.'));
+
+          if (!isNaN(n1) && !isNaN(n2)) {
+            v1 = n1;
+            v2 = n2;
+          }
+
+          if (v1 < v2) return newDir === 'asc' ? -1 : 1;
+          if (v1 > v2) return newDir === 'asc' ? 1 : -1;
+          return 0;
+        }
+
+        // Сортируем строки
+        rows.sort(compareRows);
+
+        // Удаляем все и вставляем назад в отсортированном порядке
+        while (tbody.firstChild) {
+          tbody.removeChild(tbody.firstChild);
+        }
+        for (const row of rows) {
+          tbody.appendChild(row);
+        }
+      });
+    }
+  })();
+</script>
+`;
+}
+  
 function go()
 {
   /*var code=document.getElementById("code").value;
