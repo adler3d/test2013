@@ -47,7 +47,7 @@ for(var i=0;i<arr.length;i++)
   var f=arr[i].split("=").length;
   if(f>2)return "FAIL at line "+i;
   var a=arr[i].trim().split(" ").join(",").split("=").join(",").split(";").join("");
-  arr[i]="ADD("+a+(f==1?",$":"")+")\\"
+  arr[i]="ADD("+a+(f==1?",{}":"")+")\\"
 }
 return "#define DEF_PRO_VARIABLE(ADD)\\\n"+arr.join("\n")+"\n//===\n#include \"defprovar.inl\"\n//===";</textarea></p>
     </div>
@@ -56,5 +56,5 @@ return "#define DEF_PRO_VARIABLE(ADD)\\\n"+arr.join("\n")+"\n//===\n#include \"d
     <p><button onclick="go();">Go&nbsp;<i>//from cpp</i></button>&nbsp;&nbsp;&nbsp;<button onclick="go_from_json();">Go&nbsp;<i>//from JSON</i></button></p>
     <p><textarea spellcheck="false" rows="20" name="out" id="out"></textarea></p>
   <pre>see:     <a href="defproinit.inl">defproinit.inl</a>     <a href="defprovar.inl">defprovar.inl</a></pre>
-  <h2>version 1.1</h2>
+  <h2>version 1.2</h2>
 </body></html>
