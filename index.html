@@ -233,7 +233,52 @@ var parse_wmdatetime=s=>{
 function byid(s){return document.getElementById(s);}
 
 function html(s){byid("htmlout").innerHTML=s;return s;}
+var md2bb=s=>markdownToBBCode(s);
+function markdownToBBCode(markdown) {
+    if (typeof markdown !== 'string') return '';
 
+    let result = markdown;
+
+    // 1. Заголовки: #, ##, ### → [b]
+    result = result.replace(/^#{1,3}\s+(.+)/gm, '[b]$1[/b]');
+
+    // 2. Жирный: **текст** или __текст__ → [b]текст[/b]
+    result = result.replace(/(\*\*|__)(.+?)(\*\*|__)/g, '[b]$2[/b]');
+
+    // 3. Курсив: *текст* или _текст_ → [i]текст[/i]
+    result = result.replace(/(\*|_)(.+?)(\*|_)/g, '[i]$2[/i]');
+
+    // 4. Ссылки: [текст](url) → [url=url]текст[/url]
+    result = result.replace(
+        /\[([^\]]+)\]\(([^)]+)\)/g,
+        '[url=$2]$1[/url]'
+    );
+
+    // 5. Инлайн‑код: `код` → оборачиваем в <font color="gray"><small>код</small></font>
+    result = result.replace(/`([^`]+)`/g, 
+        '<font color="gray"><small>$1</small></font>'
+    );
+
+    // 6. Блоки кода: ```язык?\n...\n``` → <font color="gray"><pre>...</pre></font>
+    result = result.replace(/```(\w*)?\n?([\s\S]*?)\n?```/g,
+        '<font color="gray"><pre>$2</pre></font>'
+    );
+
+    // 7. Цитаты: > текст → <font color="gray">текст</font>
+    // (если нужно сохранить однострочное отображение)
+    result = result.replace(/^>\s+(.+)/gm,
+        '<font color="gray">$1</font>'
+    );
+
+    // 8. Списки: - или * в начале строки → убираем маркер
+    result = result.replace(/^[\-\*]\s+(.+)/gm, '$1');
+
+    // 9. Убираем избыточные пустые строки
+    result = result.replace(/\n{3,}/g, '\n\n');
+
+    return result.trim();
+}
+                          
 function csv2table_v3(csvStr, sep = ",") {
   const pcsv = parse_csv_with_head(csvStr, sep);
   return with_style_for_center_pre_div_table(pcsv2sortabletable(pcsv), "table_main") + sortableTableScript();
