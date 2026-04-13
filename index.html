@@ -65,6 +65,13 @@ var arrmapdrop=(arr,keys)=>arr.map(e=>mapdrop(e,keys));
 var mapgetdef=(m,k,def)=>((k in m)?m[k]:def);
 var qapclone=obj=>JSON.parse(JSON.stringify(obj));
 
+var isobj=obj=>obj&&!Array.isArray(obj)&&(typeof obj==='object');
+var nicejson=obj=>{
+  if(isobj(obj))return "{"+Object.keys(obj).map(e=>json(e)+":"+json(obj[e])).join(",\n")+"}";
+  if(Array.isArray(obj))return "["+obj.map(e=>json(e)).join(",\n")+"]";
+  return json(obj);
+}
+
 var json_once=(obj,replacer,indent,limit)=>{
   var objs=[];var keys=[];if(typeof(limit)=='undefined')limit=2048;
   return json(obj,(key,v)=>{
